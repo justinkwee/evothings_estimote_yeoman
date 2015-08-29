@@ -1,15 +1,87 @@
 'use strict';
 
 /**
- * @ngdoc overview
- * @name yeomanTestApp
+ * @ngdoc function
+ * @name yeomanTestApp.controller:BeaconCtrl
  * @description
- * # yeomanTestApp
- *
- * Main module of the application.
+ * # BeaconCtrl
+ * Controller of the yeomanTestApp
  */
+ 
 /*
- var app = (function()
+ // Test that controller syntax works
+ function BeaconCtrl($scope) {
+	
+	var displayBeacon = {
+		major: 'TestMajor',
+		minor: 'TestMinor',
+		proximity: 'TestProximity',
+		distance: 'TestDistance',	
+		rssi: 'TestRSSI'
+	};
+	
+	var displayBeacons = [];
+	displayBeacons.push(displayBeacon);
+	
+	$scope.beacons = displayBeacons;
+}
+*/  
+
+/*
+// Test that controller to factory syntax works
+ function BeaconCtrl($scope, BeaconList) {
+
+	var displayBeacons = [];	
+	
+	displayBeacons.push(BeaconList.get());
+	
+	$scope.beacons = displayBeacons;
+}
+*/
+ function BeaconCtrl($scope, BeaconList) {
+
+	var displayBeacons = [];
+	//var _beaconList = new BeaconList();
+	
+	displayBeacons.push(BeaconList.get());
+	
+	$scope.beacons = displayBeacons;
+	//$('#found-beacons').empty();
+	/*
+	var intervalId = setInterval(function () {
+		geolocation.getCurrentPosition(function (position) {
+		  $scope.position = position;
+		});
+	}, 500);
+	
+	$scope.$on('$destroy', function () {
+		clearInterval(intervalId);
+	});
+	*/
+	
+	
+	/*
+	displayBeacons.major = 'TestMajor';
+	displayBeacons.minor = 'TestMinor';
+	displayBeacons.proximity = 'TestProximity';
+	displayBeacons.distance = 'TestDistance';	
+	displayBeacons.rssi = 'TestRSSI';*/
+	//$scope.beacons = BeaconList.displayBeacons;
+	
+	/*
+	$scope.major = 'TestMajor';
+	$scope.minor = 'TestMinor';
+	$scope.proximity = 'TestProximity';
+	$scope.distance = 'TestDistance';	
+	$scope.rssi = 'TestRSSI';
+	*/
+ }
+ 
+ var BeaconController = angular.module('yeomanTestApp')
+  //.controller('BeaconCtrl', ['$scope', BeaconCtrl]);
+  .controller('BeaconCtrl', ['$scope', 'BeaconList', BeaconCtrl]);
+/*
+  var app = (function()
 {
 	// Application object.
 	var app = {}; //DIDN'T ADD THIS
@@ -164,30 +236,4 @@
 })();
 
 app.initialize();
- */
- 
-angular
-  .module('yeomanTestApp', [
-    'ngAnimate',
-    'ngCookies',
-    'ngMessages',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch'	
-  ])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  });
-  
+*/

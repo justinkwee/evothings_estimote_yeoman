@@ -62,9 +62,38 @@
 
 		<!--<button class="menu" onclick=""><img src="ui/images/menu.svg" /></button> -->
 	</header>
-	<div>
-		<p>Demo of ranging for Estimote Beacons. Works with all factory configured beacons.</p>
-		<ul id="found-beacons" class="dynamic"></ul>
+	<div ng-controller="BeaconCtrl">
+		<p>Demo of ranging for Estimote Beacons. Works with all factory configured beacons.</p>		
+		<ul class="dynamic">
+		<!--
+			<li>
+				Major: {{major}}<br/>
+				Minor: {{minor}}<br/>
+				Proximity: {{proximity}}<br/>
+				Distance: {{distance}}<br/>
+				RSSI: {{rssi}}<br/>
+		-->
+			<li ng-repeat="beacon in beacons">
+				Major: {{beacon.major}}<br/>
+				Minor: {{beacon.minor}}<br/>
+				Proximity: {{beacon.proximity}}<br/>
+				Distance: {{beacon.distance}}<br/>
+				RSSI: {{beacon.rssi}}<br/>
+		
+		<!--	
+			<li ng-repeat="beacon in beacons">			
+				Major: TEST<br/>
+				Minor: TEST<br/>
+				Proximity: TEST<br/>
+				Distance: TEST<br/>
+				RSSI: TEST<br/>
+		-->
+				<!--<div style="background:{{beacon.rgb}};height:20px;width:{{beacon.rssiWidth}}%;"></div>-->
+			
+			</li>
+			
+			
+		</ul>
 	</div>
 		
     <div class="container">
@@ -112,6 +141,8 @@
 		
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/about.js"></script>
+		<script src="scripts/controllers/beaconController.js"></script>
+		<script src="scripts/factory/beaconFactory.js"></script>
 		
 		<script src="scripts/evothings/evothings.js"></script>
 		<script src="scripts/jquery.js"></script>

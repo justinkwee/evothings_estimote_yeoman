@@ -1,42 +1,76 @@
 'use strict';
 
 /**
- * @ngdoc overview
- * @name yeomanTestApp
+ * @ngdoc function
+ * @name yeomanTestApp.controller:BeaconCtrl
  * @description
- * # yeomanTestApp
- *
- * Main module of the application.
+ * # BeaconCtrl
+ * Controller of the yeomanTestApp
  */
+
+ function CordovaReadyFactory() {
+  return function (fn) {
+
+    var queue = [];
+
+    var impl = function () {
+      queue.push(Array.prototype.slice.call(arguments));
+    };
+
+    document.addEventListener('deviceready', function () {
+      queue.forEach(function (args) {
+        fn.apply(this, args);
+      });
+      impl = fn;
+    }, false);
+
+    return function () {
+      return impl.apply(this, arguments);
+    };
+  };
+}
+
 /*
- var app = (function()
-{
-	// Application object.
-	var app = {}; //DIDN'T ADD THIS
+// Test that controller to factory syntax works
+function BeaconListFactory() {
+	//var app = {};
+	
+	//var beacons = {};
+	var displayBeacon = {};
+	
+	displayBeacon = {
+		major: 'TestMajor',
+		minor: 'TestMinor',
+		proximity: 'TestProximity',
+		distance: 'TestDistance',	
+		rssi: 'TestRSSI'
+	};
+	
+	return {
+		get: function() {
+			return displayBeacon;
+		}
+	};
+}
+*/	
+ 
+function BeaconListFactory($rootScope, CordovaReady) {
 
-	// Dictionary of beacons.
+	var app = {};
+	var displayBeacons = [];
 	var beacons = {};
-
-	// Timer that displays list of beacons.
-	var updateTimer = null;
-
+	
+	
+	//var updateTimer = null;
+	/*
 	app.initialize = function()
 	{
-		document.addEventListener('deviceready', onDeviceReady, false);
+		document.addEventListener('deviceready', onDeviceReady, false); // wait for Cordova to be ready
 	};
-
-	function onDeviceReady()
-	{
-		// Specify a shortcut for the location manager holding the iBeacon functions.
-		window.estimote = EstimoteBeacons;
-
-		// Start tracking beacons!
-		startScan();
-
-		// Display refresh timer.
-		updateTimer = setInterval(displayBeaconList, 500);
-	}
-
+	*/
+	
+	
+	
 	function startScan()
 	{
 		function onBeaconsRanged(beaconInfo)
@@ -68,21 +102,24 @@
 			onBeaconsRanged,
 			onError);
 	}
-
+	
 	function displayBeaconList()
 	{
 		// Clear beacon list.
-		$('#found-beacons').empty();
+		//$('#found-beacons').empty();
 
 		var timeNow = Date.now();
 
 		// Update beacon list.
-		$.each(beacons, function(key, beacon)
-		{
+		//$.each(beacons, function(key, beacon)
+		//{
+		angular.forEach(beacons, function(beacon, key)
+		{		
 			// Only show beacons that are updated during the last 60 seconds.
 			if (beacon.timeStamp + 60000 > timeNow)
 			{
 				// Create tag to display beacon data.
+				/*
 				var element = $(
 					'<li>'
 					+	'Major: ' + beacon.major + '<br />'
@@ -94,10 +131,15 @@
 				);
 
 				$('#found-beacons').append(element);
+				*/
+				displayBeacons[key] = beacon;
+				displayBeacons[key].proximity = proximityHTML(beacon);
+				//displayBeacons[key].distance = distanceHTML(beacon);
+				//displayBeacons[key].rssi = rssiHTML(beacon);
 			}
 		});
 	}
-
+	
 	function proximityHTML(beacon)
 	{
 		var proximity = beacon.proximity;
@@ -111,7 +153,7 @@
 
 		return 'Proximity: ' + proximityNames[proximity] + '<br />';
 	}
-
+/*
 	function distanceHTML(beacon)
 	{
 		var meters = beacon.distance;
@@ -159,35 +201,31 @@
 
 		return html;
 	}
+	*/
+	
+	return {
+		getDisplayBeacons: CordovaReady( function() {
+	//function onDeviceReady()
+	//{
+			// Specify a shortcut for the location manager holding the iBeacon functions.
+			window.estimote = EstimoteBeacons;
 
-	return app;
-})();
+			// Start tracking beacons!
+			startScan();
 
-app.initialize();
- */
- 
+			// Display refresh timer.
+			//updateTimer = setInterval(displayBeaconList, 500);
+			displayBeaconList();
+			return displayBeacons;
+	//}
+		})
+	};
+	
+	//return displayBeacons;
+	//return displayBeacon;
+}
+
 angular
-  .module('yeomanTestApp', [
-    'ngAnimate',
-    'ngCookies',
-    'ngMessages',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch'	
-  ])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  });
-  
+	.module('yeomanTestApp')
+	.factory('CordovaReady', [CordovaReadyFactory])
+	.factory('BeaconList', ['$rootScope', 'CordovaReady', BeaconListFactory]);
