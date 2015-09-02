@@ -204,19 +204,40 @@ function BeaconListFactory($rootScope, CordovaReady) {
 	*/
 	
 	return {
-		getDisplayBeacons: CordovaReady( function() {
+		getBeaconsList: CordovaReady( function(onSuccess, onError, options) {
 	//function onDeviceReady()
 	//{
 			// Specify a shortcut for the location manager holding the iBeacon functions.
 			window.estimote = EstimoteBeacons;
 
 			// Start tracking beacons!
-			startScan();
+			startScan(function() {
+				var that = this,
+				args = arguments;
+
+				if (onSuccess) {
+					displayBeaconList();
+					$rootScope.$apply(function () {
+						onSuccess.apply(that, args);
+					});
+				}
+			}, function () {
+				var that = this,
+				args = arguments;
+
+				if (onError) {
+					$rootScope.$apply(function () {
+						onError.apply(that, args);
+					});
+				}
+			},
+			options);
+			
 
 			// Display refresh timer.
 			//updateTimer = setInterval(displayBeaconList, 500);
-			displayBeaconList();
-			return displayBeacons;
+			
+			//return displayBeacons;
 	//}
 		})
 	};

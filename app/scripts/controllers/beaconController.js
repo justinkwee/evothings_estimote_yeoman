@@ -40,12 +40,16 @@
 */
  function BeaconCtrl($scope, BeaconList) {
 
-	var displayBeacons = [];
+	//var displayBeacons = [];
 	//var _beaconList = new BeaconList();
 	
-	displayBeacons.push(BeaconList.get());
+	//displayBeacons.push(BeaconList.get());
+	BeaconList.getBeaconsList(function(something) { 
+		alert(something);
+		$scope.beacons = something.displayBeacons;
+	});
 	
-	$scope.beacons = displayBeacons;
+	//$scope.beacons = displayBeacons;
 	//$('#found-beacons').empty();
 	/*
 	var intervalId = setInterval(function () {
