@@ -1,5 +1,6 @@
 'use strict';
 
+//hyper.log('Entered app.js');
 /**
  * @ngdoc overview
  * @name yeomanTestApp

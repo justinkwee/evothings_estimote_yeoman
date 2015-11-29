@@ -44,24 +44,49 @@
 	//var _beaconList = new BeaconList();
 	
 	//displayBeacons.push(BeaconList.get());
+
+	function alertDismissed () {
+
+	}
+
+	$scope.buttonClick = function() {
+		//console.log('Getting in buttonClick');
+		//hyper.log('Getting in buttonClick');
+		alert('Alerts are working');
+		//navigator.notification.alert('Navigator test', alertDismissed);
+	};
+
+	
+	//alert('Getting in BeaconCtrl');
+	//navigator.notigication.alert('Navigator test', alertDismissed);
+	//console.log('Entered BeaconCtrl');
+	//hyper.log('Entered BeaconCtrl');
+	/*
 	BeaconList.getBeaconsList(function(something) { 
 		alert(something);
 		$scope.beacons = something.displayBeacons;
 	});
+	*/
 	
 	//$scope.beacons = displayBeacons;
 	//$('#found-beacons').empty();
-	/*
+	
 	var intervalId = setInterval(function () {
-		geolocation.getCurrentPosition(function (position) {
-		  $scope.position = position;
+		$scope.$apply( function () {
+			var tempBeacons = BeaconList.getBeaconsList();
+
+			
+			$scope.beacons = tempBeacons;
+			for (var k in $scope.beacons) {
+				//hyper.log('In scope apply: ' + k.major + $scope.beacons[k].major);	
+			}
 		});
-	}, 500);
+	}, 2000);
 	
 	$scope.$on('$destroy', function () {
 		clearInterval(intervalId);
 	});
-	*/
+	
 	
 	
 	/*
@@ -80,10 +105,11 @@
 	$scope.rssi = 'TestRSSI';
 	*/
  }
+
  
  var BeaconController = angular.module('yeomanTestApp')
   //.controller('BeaconCtrl', ['$scope', BeaconCtrl]);
-  .controller('BeaconCtrl', ['$scope', 'BeaconList', BeaconCtrl]);
+  .controller('BeaconCtrl', ['$scope', 'BeaconList', BeaconCtrl]);  
 /*
   var app = (function()
 {

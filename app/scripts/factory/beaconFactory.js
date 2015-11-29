@@ -10,7 +10,8 @@
 
  function CordovaReadyFactory() {
   return function (fn) {
-
+  	//console.log('Entered CordovaReadyFactory')
+  	//hyper.log('Entered CordovaReadyFactory');
     var queue = [];
 
     var impl = function () {
@@ -25,6 +26,8 @@
     }, false);
 
     return function () {
+    	//console.log('Exited CordovaReadyFactory');	
+    	//hyper.log('Exited CordovaReadyFactory');
       return impl.apply(this, arguments);
     };
   };
@@ -54,11 +57,13 @@ function BeaconListFactory() {
 }
 */	
  
-function BeaconListFactory($rootScope, CordovaReady) {
+function BeaconListFactory($sce, CordovaReady) {
 
 	var app = {};
 	var displayBeacons = [];
 	var beacons = {};
+	//console.log('Entered BeaconsListFactory');
+	//hyper.log('Entered BeaconsListFactory');
 	
 	
 	//var updateTimer = null;
@@ -73,6 +78,7 @@ function BeaconListFactory($rootScope, CordovaReady) {
 	
 	function startScan()
 	{
+		//hyper.log('Entered startScan');
 		function onBeaconsRanged(beaconInfo)
 		{
 			//console.log('onBeaconsRanged: ' + JSON.stringify(beaconInfo))
@@ -81,14 +87,23 @@ function BeaconListFactory($rootScope, CordovaReady) {
 				// Insert beacon into table of found beacons.
 				var beacon = beaconInfo.beacons[i];
 				beacon.timeStamp = Date.now();
-				var key = beacon.uuid + ':' + beacon.major + ':' + beacon.minor;
+				var key = beacon.proximityUUID + ':' + beacon.major + ':' + beacon.minor;
 				beacons[key] = beacon;
+				//hyper.log('checking inside beacons: ' + beacons[key].proximity);
 			}
+
+			/* Debugging */
+			for (var key in beacons) {
+   				if (beacons.hasOwnProperty(key)) {
+      				//hyper.log('checking beacons[key] in onBeaconsRanged: ' + key + beacons[key]);
+   				}
+			}
+			/* End of debugging */
 		}
 
 		function onError(errorMessage)
 		{
-			console.log('Ranging beacons did fail: ' + errorMessage);
+			//console.log('Ranging beacons did fail: ' + errorMessage);
 		}
 
 		// Request permission from user to access location info.
@@ -101,6 +116,14 @@ function BeaconListFactory($rootScope, CordovaReady) {
 			    // with the Estimote factory set UUID.
 			onBeaconsRanged,
 			onError);
+
+		/* Debugging */
+		for (var key in beacons) {
+				if (beacons.hasOwnProperty(key)) {
+  				//hyper.log('checking beacons[key] at end of startScan: ', key, beacons[key]);
+				}
+		}
+		/* End of debugging */
 	}
 	
 	function displayBeaconList()
@@ -109,14 +132,29 @@ function BeaconListFactory($rootScope, CordovaReady) {
 		//$('#found-beacons').empty();
 
 		var timeNow = Date.now();
-
+		
 		// Update beacon list.
 		//$.each(beacons, function(key, beacon)
 		//{
-		angular.forEach(beacons, function(beacon, key)
+		//var temp = angular.toJson(beacons);
+		//var temp = JSON.stringify(beacons, null, 2);
+		//hyper.log('got in displayBeaconList');
+		/* Debugging */
+		for (var key in beacons) {
+				if (beacons.hasOwnProperty(key)) {
+  				//hyper.log('checking beacons[key] in displayBeaconList: ', key, beacons[key]);
+				}
+		}
+		/* End of debugging */
+		
+
+		angular.forEach(beacons, function(value, key)
 		{		
+			//hyper.log('Entered displayBeaconList, key, beacon:' + value.proximity + value.distance);
+
 			// Only show beacons that are updated during the last 60 seconds.
-			if (beacon.timeStamp + 60000 > timeNow)
+
+			if (value.timeStamp + 60000 > timeNow)
 			{
 				// Create tag to display beacon data.
 				/*
@@ -132,8 +170,14 @@ function BeaconListFactory($rootScope, CordovaReady) {
 
 				$('#found-beacons').append(element);
 				*/
-				displayBeacons[key] = beacon;
-				displayBeacons[key].proximity = proximityHTML(beacon);
+				displayBeacons.push(value);
+				//hyper.log('Count of displayBeacons: ' + displayBeacons.length);
+				displayBeacons[displayBeacons.length - 1].proximity = proximityHTML(value);
+				displayBeacons[displayBeacons.length - 1].distance = distanceHTML(value);
+				displayBeacons[displayBeacons.length - 1].rssi = $sce.trustAsHtml(rssiHTML(value));
+				//displayBeacons[key] = value;
+				//displayBeacons[key].proximity = proximityHTML(value);
+				//hyper.log('In displayBeaconList' + displayBeacons[key]);
 				//displayBeacons[key].distance = distanceHTML(beacon);
 				//displayBeacons[key].rssi = rssiHTML(beacon);
 			}
@@ -151,9 +195,9 @@ function BeaconListFactory($rootScope, CordovaReady) {
 			'Near',
 			'Far'];
 
-		return 'Proximity: ' + proximityNames[proximity] + '<br />';
+		return proximityNames[proximity];
 	}
-/*
+
 	function distanceHTML(beacon)
 	{
 		var meters = beacon.distance;
@@ -166,7 +210,7 @@ function BeaconListFactory($rootScope, CordovaReady) {
 
 		if (meters < 0) { distance = '?'; }
 
-		return 'Distance: ' + distance + '<br />'
+		return distance;
 	}
 
 	function rssiHTML(beacon)
@@ -195,23 +239,43 @@ function BeaconListFactory($rootScope, CordovaReady) {
 		rssiWidth *= 1.5;
 
 		var html =
-			'RSSI: ' + beacon.rssi + '<br />'
+			beacon.rssi + '<br />'
 			+ '<div style="background:' + rgb + ';height:20px;width:'
 			+ 		rssiWidth + '%;"></div>'
 
 		return html;
 	}
-	*/
+	
 	
 	return {
-		getBeaconsList: CordovaReady( function(onSuccess, onError, options) {
+		//getBeaconsList: CordovaReady( function(onSuccess, onError, options) {
+		getBeaconsList: CordovaReady( function() {	
 	//function onDeviceReady()
 	//{
 			// Specify a shortcut for the location manager holding the iBeacon functions.
+			/* Didn't work
+			if (onSuccess) {
+				console.log('Entered onSuccess');	
+			}
+			else if (onError) {
+				console.log('Entered onError');
+			}
+			*/
+			//console.log('Entered getBeaconsList');
+			//hyper.log('Entered getBeaconsList');
 			window.estimote = EstimoteBeacons;
+			
+			startScan();
+			displayBeacons.length = 0; //clear displayBeacons array
+			displayBeaconList();
+			//hyper.log('Just before return, displayBeacons:' + Object.keys(displayBeacons).length);
+			return displayBeacons;
+
 
 			// Start tracking beacons!
+			/*
 			startScan(function() {
+				hyper.log('Got into return startScan')
 				var that = this,
 				args = arguments;
 
@@ -219,7 +283,7 @@ function BeaconListFactory($rootScope, CordovaReady) {
 					displayBeaconList();
 					$rootScope.$apply(function () {
 						onSuccess.apply(that, args);
-					});
+					});					
 				}
 			}, function () {
 				var that = this,
@@ -232,7 +296,18 @@ function BeaconListFactory($rootScope, CordovaReady) {
 				}
 			},
 			options);
-			
+			*/
+			/* TRYING short form
+			startScan();
+			var that = this;
+			args = arguments;
+			 if (onSuccess) {
+			 	displayBeaconList();
+			 	$rootScope.$apply(function () {
+			 		onSuccess.apply(that, args);
+			 	});
+			 }
+			*/
 
 			// Display refresh timer.
 			//updateTimer = setInterval(displayBeaconList, 500);
@@ -249,4 +324,4 @@ function BeaconListFactory($rootScope, CordovaReady) {
 angular
 	.module('yeomanTestApp')
 	.factory('CordovaReady', [CordovaReadyFactory])
-	.factory('BeaconList', ['$rootScope', 'CordovaReady', BeaconListFactory]);
+	.factory('BeaconList', ['$sce', 'CordovaReady', BeaconListFactory]);

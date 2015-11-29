@@ -8,7 +8,6 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -63,8 +62,9 @@
 		<!--<button class="menu" onclick=""><img src="ui/images/menu.svg" /></button> -->
 	</header>
 	<div ng-controller="BeaconCtrl">
-		<p>Demo of ranging for Estimote Beacons. Works with all factory configured beacons.</p>		
-		<ul class="dynamic">
+		<p>Demo of ranging for Estimote Beacons. Works with all factory configured beacons.</p>	
+    <button ng-click="buttonClick()">Testing alert</button>	
+		<!-- Try commenting this out <ul class="dynamic"> -->
 		<!--
 			<li>
 				Major: {{major}}<br/>
@@ -73,13 +73,20 @@
 				Distance: {{distance}}<br/>
 				RSSI: {{rssi}}<br/>
 		-->
-			<li ng-repeat="beacon in beacons">
+    
+			<!-- <li ng-repeat="beacon in beacons"> -->
+      <div ng-repeat="beacon in beacons">
 				Major: {{beacon.major}}<br/>
 				Minor: {{beacon.minor}}<br/>
-				Proximity: {{beacon.proximity}}<br/>
-				Distance: {{beacon.distance}}<br/>
-				RSSI: {{beacon.rssi}}<br/>
-		
+        Proximity: {{beacon.proximity}}<br/>
+        Distance: {{beacon.distance}}<br/>
+				RSSI: <div ng-bind-html="beacon.rssi"></div><br/>
+<!--
+        Minor: {{beacon.minor}}<br/>
+        Proximity: {{beacon.proximity}}<br/>
+        Distance: {{beacon.distance}}<br/>
+        RSSI: {{beacon.rssi}}<br/>
+-->		
 		<!--	
 			<li ng-repeat="beacon in beacons">			
 				Major: TEST<br/>
@@ -90,10 +97,10 @@
 		-->
 				<!--<div style="background:{{beacon.rgb}};height:20px;width:{{beacon.rssiWidth}}%;"></div>-->
 			
-			</li>
+			<!-- </li> -->
+    </div>
 			
-			
-		</ul>
+		<!-- </ul> -->
 	</div>
 		
     <div class="container">
